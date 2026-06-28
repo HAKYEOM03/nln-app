@@ -1,0 +1,88 @@
+.work-detail {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: #667eea;
+  margin-bottom: 24px;
+  transition: opacity 0.2s;
+}
+
+.back-link:hover {
+  opacity: 0.8;
+}
+
+.detail-header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.detail-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.detail-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #888;
+}
+
+.detail-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.detail-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e0e0e0;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-section-content {
+  padding: 20px;
+  font-size: 14px;
+  color: #aaa;
+  line-height: 1.7;
+}
+
+.github-link {
+  color: #667eea;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.github-link:hover {
+  text-decoration: underline;
+}
+
+.result-area {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
