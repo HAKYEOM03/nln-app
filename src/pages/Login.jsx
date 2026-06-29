@@ -18,7 +18,7 @@ function Login() {
       if (user.role === 'admin' || user.role === 'subadmin') {
         navigate('/admin')
       } else {
-        navigate('/personal')
+        navigate('/project')
       }
     } catch (err) {
       setError(err.message)

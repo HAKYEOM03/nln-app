@@ -19,12 +19,16 @@ function Navbar() {
           <span className="logo-sub">프로로 만들어주는 Project</span>
         </Link>
         <div className="navbar-center">
-          <NavLink to="/personal" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            개인
-          </NavLink>
-          <NavLink to="/project" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-            프로젝트
-          </NavLink>
+          {user && (
+            <>
+              <NavLink to="/personal" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                개인
+              </NavLink>
+              <NavLink to="/project" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+                프로젝트
+              </NavLink>
+            </>
+          )}
           {(isAdmin || isSubAdmin) && (
             <NavLink to="/admin" className={({ isActive }) => isActive ? 'nav-link active admin-link' : 'nav-link admin-link'}>
               관리자
