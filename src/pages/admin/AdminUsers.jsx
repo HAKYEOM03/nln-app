@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getUsers, deleteUser } from '../../utils/db'
@@ -6,9 +6,13 @@ import './Admin.css'
 
 function AdminUsers() {
   const { hasPermission } = useAuth()
-  const [users, setUsers] = useState(() => getUsers().filter(u => u.role !== 'admin'))
+  const [users, setUsers] = useState([])
   const [expandedId, setExpandedId] = useState(null)
   const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    getUsers().then(u => setUsers(u.filter(x => x.role !== 'admin')))
+  }, [])
 
   if (!hasPermission('users')) return <div className="admin-page"><p>접근 권한이 없습니다.</p></div>
 
@@ -16,10 +20,11 @@ function AdminUsers() {
     u.name?.includes(search) || u.username?.includes(search) || u.studentId?.includes(search)
   )
 
-  const handleDelete = (userId) => {
+  const handleDelete = async (userId) => {
     if (!confirm('정말 삭제하시겠습니까?')) return
-    deleteUser(userId)
-    setUsers(getUsers().filter(u => u.role !== 'admin'))
+    await deleteUser(userId)
+    const updated = await getUsers()
+    setUsers(updated.filter(u => u.role !== 'admin'))
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getNotices, addNotice, deleteNotice } from '../../utils/db'
@@ -6,25 +6,31 @@ import './Admin.css'
 
 function AdminNotices() {
   const { user, hasPermission } = useAuth()
-  const [notices, setNotices] = useState(getNotices)
+  const [notices, setNotices] = useState([])
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
 
+  useEffect(() => {
+    getNotices().then(setNotices)
+  }, [])
+
   if (!hasPermission('notices')) return <div className="admin-page"><p>접근 권한이 없습니다.</p></div>
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault()
     if (!title.trim()) return
-    addNotice({ title, content, authorName: user.name, authorId: user.id })
-    setNotices(getNotices())
+    await addNotice({ title, content, authorName: user.name, authorId: user.id })
+    const updated = await getNotices()
+    setNotices(updated)
     setTitle('')
     setContent('')
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm('삭제하시겠습니까?')) return
-    deleteNotice(id)
-    setNotices(getNotices())
+    await deleteNotice(id)
+    const updated = await getNotices()
+    setNotices(updated)
   }
 
   return (

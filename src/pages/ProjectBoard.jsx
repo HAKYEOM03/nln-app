@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getSubmissions } from '../utils/db'
@@ -14,8 +14,12 @@ function ProjectBoard() {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState('전체')
   const [viewingCode, setViewingCode] = useState(null)
+  const [allSubs, setAllSubs] = useState([])
 
-  const allSubs = getSubmissions()
+  useEffect(() => {
+    getSubmissions().then(setAllSubs)
+  }, [])
+
   const filtered = selectedCategory === '전체' ? allSubs : allSubs.filter(s => s.category === selectedCategory)
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const current = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE)

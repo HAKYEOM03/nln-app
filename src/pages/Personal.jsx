@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { getCodeFiles, saveCodeFile } from '../utils/db'
@@ -7,11 +7,15 @@ import './Personal.css'
 
 function Personal() {
   const { user } = useAuth()
-  const [files, setFiles] = useState(() => getCodeFiles(user.id))
+  const [files, setFiles] = useState([])
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [selectedFile, setSelectedFile] = useState(null)
   const fileInputRef = useRef(null)
+
+  useEffect(() => {
+    getCodeFiles(user.id).then(setFiles)
+  }, [user.id])
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0]
@@ -21,32 +25,34 @@ function Personal() {
     setUploadProgress(0)
 
     const reader = new FileReader()
-    reader.onprogress = (ev) => {
-      if (ev.lengthComputable) {
-        setUploadProgress(Math.round((ev.loaded / ev.total) * 100))
-      }
-    }
-    reader.onload = () => {
+    reader.onload = async () => {
       const interval = setInterval(() => {
         setUploadProgress((p) => {
           if (p >= 100) {
             clearInterval(interval)
-            const saved = saveCodeFile({
-              userId: user.id,
-              userName: user.name,
-              fileName: file.name,
-              content: reader.result,
-              size: file.size,
-              type: file.type || 'text/plain',
-            })
-            setFiles(getCodeFiles(user.id))
-            setSelectedFile(saved)
-            setUploading(false)
             return 100
           }
           return p + 5
         })
       }, 50)
+
+      const saved = await saveCodeFile({
+        userId: user.id,
+        userName: user.name,
+        fileName: file.name,
+        content: reader.result,
+        size: file.size,
+        type: file.type || 'text/plain',
+      })
+
+      setTimeout(async () => {
+        clearInterval(interval)
+        setUploadProgress(100)
+        const updated = await getCodeFiles(user.id)
+        setFiles(updated)
+        setSelectedFile(saved)
+        setUploading(false)
+      }, 1500)
     }
     reader.readAsText(file)
   }

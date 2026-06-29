@@ -8,20 +8,23 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    initDB()
-    const saved = localStorage.getItem('makepro_session')
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved)
-        const fresh = getUser(parsed.username)
-        if (fresh) setUser(fresh)
-      } catch {}
+    const init = async () => {
+      await initDB()
+      const saved = localStorage.getItem('makepro_session')
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved)
+          const fresh = await getUser(parsed.username)
+          if (fresh) setUser(fresh)
+        } catch {}
+      }
+      setLoading(false)
     }
-    setLoading(false)
+    init()
   }, [])
 
-  const login = (username, password) => {
-    const u = dbLogin(username, password)
+  const login = async (username, password) => {
+    const u = await dbLogin(username, password)
     setUser(u)
     localStorage.setItem('makepro_session', JSON.stringify(u))
     return u
@@ -32,9 +35,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('makepro_session')
   }
 
-  const refreshUser = () => {
+  const refreshUser = async () => {
     if (user) {
-      const fresh = getUser(user.username)
+      const fresh = await getUser(user.username)
       if (fresh) {
         setUser(fresh)
         localStorage.setItem('makepro_session', JSON.stringify(fresh))

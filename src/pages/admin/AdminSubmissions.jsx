@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getSubmissions } from '../../utils/db'
@@ -8,7 +8,11 @@ import './Admin.css'
 function AdminSubmissions() {
   const { hasPermission } = useAuth()
   const [viewingCode, setViewingCode] = useState(null)
-  const submissions = getSubmissions()
+  const [submissions, setSubmissions] = useState([])
+
+  useEffect(() => {
+    getSubmissions().then(setSubmissions)
+  }, [])
 
   if (!hasPermission('submissions')) return <div className="admin-page"><p>접근 권한이 없습니다.</p></div>
 

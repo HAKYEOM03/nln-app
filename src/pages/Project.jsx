@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { getNotices } from '../utils/db'
 import Pagination from '../components/Pagination'
@@ -8,7 +8,12 @@ const PER_PAGE = 10
 
 function Project() {
   const [currentPage, setCurrentPage] = useState(1)
-  const notices = getNotices()
+  const [notices, setNotices] = useState([])
+
+  useEffect(() => {
+    getNotices().then(setNotices)
+  }, [])
+
   const totalPages = Math.max(1, Math.ceil(notices.length / PER_PAGE))
   const current = notices.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE)
 

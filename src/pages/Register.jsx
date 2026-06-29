@@ -14,7 +14,7 @@ function Register() {
 
   const handleChange = (key, value) => setForm((p) => ({ ...p, [key]: value }))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     if (form.password !== form.passwordConfirm) {
@@ -27,7 +27,7 @@ function Register() {
     }
     try {
       const { passwordConfirm, ...userData } = form
-      registerUser(userData)
+      await registerUser(userData)
       setSuccess(true)
       setTimeout(() => navigate('/login'), 1500)
     } catch (err) {

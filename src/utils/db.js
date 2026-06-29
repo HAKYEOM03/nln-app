@@ -1,158 +1,154 @@
-const KEYS = {
-  USERS: 'makepro_users',
-  NOTICES: 'makepro_notices',
-  SUBMISSIONS: 'makepro_submissions',
-  CODE_FILES: 'makepro_code_files',
+import { db } from './firebase'
+import {
+  collection, doc, getDocs, addDoc, updateDoc, deleteDoc,
+  query, where, orderBy
+} from 'firebase/firestore'
+
+const COL = {
+  USERS: 'users',
+  NOTICES: 'notices',
+  SUBMISSIONS: 'submissions',
+  CODE_FILES: 'code_files',
 }
 
-function getStore(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) || []
-  } catch {
-    return []
+export async function initDB() {
+  const q = query(collection(db, COL.USERS), where('username', '==', 'admin'))
+  const snap = await getDocs(q)
+  if (snap.empty) {
+    await addDoc(collection(db, COL.USERS), {
+      username: 'admin',
+      password: 'admin123',
+      name: '관리자',
+      role: 'admin',
+      permissions: ['all'],
+      createdAt: '2024-01-01T00:00:00',
+    })
   }
 }
 
-function setStore(key, data) {
-  localStorage.setItem(key, JSON.stringify(data))
+export async function getUsers() {
+  const snap = await getDocs(collection(db, COL.USERS))
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }))
 }
 
-const ADMIN_ACCOUNT = {
-  id: 'admin',
-  username: 'admin',
-  password: 'admin123',
-  name: '관리자',
-  role: 'admin',
-  permissions: ['all'],
-  createdAt: '2024-01-01T00:00:00',
+export async function getUser(username) {
+  const q = query(collection(db, COL.USERS), where('username', '==', username))
+  const snap = await getDocs(q)
+  if (snap.empty) return null
+  const d = snap.docs[0]
+  return { id: d.id, ...d.data() }
 }
 
-export function initDB() {
-  const users = getStore(KEYS.USERS)
-  if (!users.find((u) => u.username === 'admin')) {
-    setStore(KEYS.USERS, [ADMIN_ACCOUNT, ...users])
-  }
-}
-
-export function getUsers() {
-  return getStore(KEYS.USERS)
-}
-
-export function getUser(username) {
-  return getStore(KEYS.USERS).find((u) => u.username === username)
-}
-
-export function registerUser(userData) {
-  const users = getStore(KEYS.USERS)
-  if (users.find((u) => u.username === userData.username)) {
+export async function registerUser(userData) {
+  const users = await getUsers()
+  if (users.find(u => u.username === userData.username)) {
     throw new Error('이미 존재하는 아이디입니다.')
   }
-  if (users.find((u) => u.email === userData.email)) {
+  if (users.find(u => u.email === userData.email)) {
     throw new Error('이미 등록된 이메일입니다.')
   }
   const newUser = {
-    id: Date.now().toString(),
     ...userData,
     role: 'user',
     permissions: [],
     createdAt: new Date().toISOString(),
   }
-  setStore(KEYS.USERS, [...users, newUser])
-  return newUser
+  const ref = await addDoc(collection(db, COL.USERS), newUser)
+  return { id: ref.id, ...newUser }
 }
 
-export function loginUser(username, password) {
-  const user = getStore(KEYS.USERS).find(
-    (u) => u.username === username && u.password === password
+export async function loginUser(username, password) {
+  const q = query(
+    collection(db, COL.USERS),
+    where('username', '==', username),
+    where('password', '==', password)
   )
-  if (!user) throw new Error('아이디 또는 비밀번호가 일치하지 않습니다.')
-  return user
+  const snap = await getDocs(q)
+  if (snap.empty) throw new Error('아이디 또는 비밀번호가 일치하지 않습니다.')
+  const d = snap.docs[0]
+  return { id: d.id, ...d.data() }
 }
 
-export function updateUser(userId, updates) {
-  const users = getStore(KEYS.USERS)
-  const idx = users.findIndex((u) => u.id === userId)
-  if (idx === -1) throw new Error('사용자를 찾을 수 없습니다.')
-  users[idx] = { ...users[idx], ...updates }
-  setStore(KEYS.USERS, users)
-  return users[idx]
+export async function updateUser(userId, updates) {
+  const ref = doc(db, COL.USERS, userId)
+  await updateDoc(ref, updates)
+  return { id: userId, ...updates }
 }
 
-export function deleteUser(userId) {
-  const users = getStore(KEYS.USERS).filter((u) => u.id !== userId)
-  setStore(KEYS.USERS, users)
+export async function deleteUser(userId) {
+  await deleteDoc(doc(db, COL.USERS, userId))
 }
 
-export function getNotices() {
-  return getStore(KEYS.NOTICES).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+export async function getNotices() {
+  const snap = await getDocs(collection(db, COL.NOTICES))
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 }
 
-export function addNotice(notice) {
-  const notices = getStore(KEYS.NOTICES)
-  const newNotice = {
-    id: Date.now().toString(),
-    ...notice,
-    createdAt: new Date().toISOString(),
-  }
-  setStore(KEYS.NOTICES, [...notices, newNotice])
-  return newNotice
+export async function addNotice(notice) {
+  const newNotice = { ...notice, createdAt: new Date().toISOString() }
+  const ref = await addDoc(collection(db, COL.NOTICES), newNotice)
+  return { id: ref.id, ...newNotice }
 }
 
-export function updateNotice(noticeId, updates) {
-  const notices = getStore(KEYS.NOTICES)
-  const idx = notices.findIndex((n) => n.id === noticeId)
-  if (idx === -1) return
-  notices[idx] = { ...notices[idx], ...updates }
-  setStore(KEYS.NOTICES, notices)
+export async function deleteNotice(noticeId) {
+  await deleteDoc(doc(db, COL.NOTICES, noticeId))
 }
 
-export function deleteNotice(noticeId) {
-  setStore(KEYS.NOTICES, getStore(KEYS.NOTICES).filter((n) => n.id !== noticeId))
+export async function getSubmissions() {
+  const snap = await getDocs(collection(db, COL.SUBMISSIONS))
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 }
 
-export function getSubmissions() {
-  return getStore(KEYS.SUBMISSIONS).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+export async function addSubmission(submission) {
+  const newSub = { ...submission, createdAt: new Date().toISOString() }
+  const ref = await addDoc(collection(db, COL.SUBMISSIONS), newSub)
+  return { id: ref.id, ...newSub }
 }
 
-export function addSubmission(submission) {
-  const subs = getStore(KEYS.SUBMISSIONS)
-  const newSub = {
-    id: Date.now().toString(),
-    ...submission,
-    createdAt: new Date().toISOString(),
-  }
-  setStore(KEYS.SUBMISSIONS, [...subs, newSub])
-  return newSub
-}
-
-export function getCodeFiles(userId) {
-  return getStore(KEYS.CODE_FILES)
-    .filter((f) => f.userId === userId)
+export async function getCodeFiles(userId) {
+  const q = query(collection(db, COL.CODE_FILES), where('userId', '==', userId))
+  const snap = await getDocs(q)
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
 }
 
-export function getAllCodeFiles() {
-  return getStore(KEYS.CODE_FILES).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
+export async function getAllCodeFiles() {
+  const snap = await getDocs(collection(db, COL.CODE_FILES))
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
 }
 
-export function saveCodeFile(fileData) {
-  const files = getStore(KEYS.CODE_FILES)
-  const existing = files.findIndex(
-    (f) => f.userId === fileData.userId && f.fileName === fileData.fileName
+export async function saveCodeFile(fileData) {
+  const q = query(
+    collection(db, COL.CODE_FILES),
+    where('userId', '==', fileData.userId),
+    where('fileName', '==', fileData.fileName)
   )
-  const entry = {
-    id: existing >= 0 ? files[existing].id : Date.now().toString(),
-    ...fileData,
-    updatedAt: new Date().toISOString(),
-    history: existing >= 0
-      ? [...(files[existing].history || []), { date: new Date().toISOString(), action: '리뉴얼' }]
-      : [{ date: new Date().toISOString(), action: '최초 업로드' }],
-  }
-  if (existing >= 0) {
-    files[existing] = entry
+  const snap = await getDocs(q)
+
+  if (!snap.empty) {
+    const existing = snap.docs[0]
+    const old = existing.data()
+    const updated = {
+      ...fileData,
+      updatedAt: new Date().toISOString(),
+      history: [...(old.history || []), { date: new Date().toISOString(), action: '리뉴얼' }],
+    }
+    await updateDoc(doc(db, COL.CODE_FILES, existing.id), updated)
+    return { id: existing.id, ...updated }
   } else {
-    files.push(entry)
+    const entry = {
+      ...fileData,
+      updatedAt: new Date().toISOString(),
+      history: [{ date: new Date().toISOString(), action: '최초 업로드' }],
+    }
+    const ref = await addDoc(collection(db, COL.CODE_FILES), entry)
+    return { id: ref.id, ...entry }
   }
-  setStore(KEYS.CODE_FILES, files)
-  return entry
 }

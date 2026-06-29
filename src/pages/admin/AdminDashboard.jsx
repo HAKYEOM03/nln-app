@@ -1,14 +1,20 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { getUsers, getNotices, getSubmissions, getAllCodeFiles } from '../../utils/db'
+import { getUsers, getNotices, getSubmissions } from '../../utils/db'
 import './Admin.css'
 
 function AdminDashboard() {
   const { user, isAdmin, hasPermission } = useAuth()
-  const users = getUsers().filter(u => u.role !== 'admin')
-  const notices = getNotices()
-  const submissions = getSubmissions()
-  const codeFiles = getAllCodeFiles()
+  const [users, setUsers] = useState([])
+  const [notices, setNotices] = useState([])
+  const [submissions, setSubmissions] = useState([])
+
+  useEffect(() => {
+    getUsers().then(u => setUsers(u.filter(x => x.role !== 'admin')))
+    getNotices().then(setNotices)
+    getSubmissions().then(setSubmissions)
+  }, [])
 
   const cards = [
     { label: '등록 회원', count: users.length, path: '/admin/users', perm: 'users', color: '#667eea' },

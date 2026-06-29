@@ -10,11 +10,11 @@ function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
-      const user = login(username, password)
+      const user = await login(username, password)
       if (user.role === 'admin' || user.role === 'subadmin') {
         navigate('/admin')
       } else {

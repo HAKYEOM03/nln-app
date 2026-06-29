@@ -24,10 +24,10 @@ function PersonalSubmit() {
     reader.readAsText(file)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.category) { alert('카테고리를 선택해주세요.'); return }
-    addSubmission({
+    await addSubmission({
       ...form,
       userId: user.id,
       userName: user.name,

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getUsers, updateUser } from '../../utils/db'
@@ -35,26 +35,33 @@ const ALL_PERM_KEYS = PERMISSION_GROUPS.flatMap(g => g.perms.map(p => p.key))
 
 function AdminSubAdmins() {
   const { isAdmin } = useAuth()
-  const [users, setUsers] = useState(() => getUsers().filter(u => u.role !== 'admin'))
+  const [users, setUsers] = useState([])
   const [editingId, setEditingId] = useState(null)
   const [editPerms, setEditPerms] = useState([])
+
+  useEffect(() => {
+    getUsers().then(u => setUsers(u.filter(x => x.role !== 'admin')))
+  }, [])
 
   if (!isAdmin) return <div className="admin-page"><p>최고관리자만 접근 가능합니다.</p></div>
 
   const subAdmins = users.filter(u => u.role === 'subadmin')
   const regularUsers = users.filter(u => u.role === 'user')
 
-  const refreshUsers = () => setUsers(getUsers().filter(u => u.role !== 'admin'))
-
-  const handlePromote = (userId) => {
-    updateUser(userId, { role: 'subadmin', permissions: [] })
-    refreshUsers()
+  const refreshUsers = async () => {
+    const u = await getUsers()
+    setUsers(u.filter(x => x.role !== 'admin'))
   }
 
-  const handleDemote = (userId) => {
+  const handlePromote = async (userId) => {
+    await updateUser(userId, { role: 'subadmin', permissions: [] })
+    await refreshUsers()
+  }
+
+  const handleDemote = async (userId) => {
     if (!confirm('부관리자 권한을 해제하시겠습니까?')) return
-    updateUser(userId, { role: 'user', permissions: [] })
-    refreshUsers()
+    await updateUser(userId, { role: 'user', permissions: [] })
+    await refreshUsers()
     setEditingId(null)
   }
 
@@ -82,9 +89,9 @@ function AdminSubAdmins() {
     setEditPerms(allSelected ? [] : [...ALL_PERM_KEYS])
   }
 
-  const savePerms = (userId) => {
-    updateUser(userId, { permissions: editPerms })
-    refreshUsers()
+  const savePerms = async (userId) => {
+    await updateUser(userId, { permissions: editPerms })
+    await refreshUsers()
     setEditingId(null)
   }
 
