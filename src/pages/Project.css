@@ -1,0 +1,19 @@
+.project-page { max-width: 1000px; margin: 0 auto; padding: 32px 24px; }
+.project-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+.project-header h2 { font-size: 24px; font-weight: 700; color: #fff; }
+.board-link { font-size: 14px; color: #667eea; font-weight: 500; padding: 8px 16px; background: rgba(102,126,234,0.1); border-radius: 8px; transition: all 0.2s; }
+.board-link:hover { background: rgba(102,126,234,0.2); }
+
+.project-container { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 24px; }
+.empty-notice { text-align: center; padding: 60px 20px; }
+.empty-notice p { color: #888; font-size: 16px; margin-bottom: 8px; }
+.empty-notice span { color: #555; font-size: 13px; }
+
+.notice-list { border-radius: 12px; overflow: hidden; }
+.notice-row { display: flex; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; transition: background 0.2s; }
+.notice-row:hover:not(.header) { background: rgba(255,255,255,0.03); }
+.notice-row.header { background: rgba(102,126,234,0.08); font-size: 13px; font-weight: 600; color: #999; }
+.n-num { width: 60px; flex-shrink: 0; color: #666; }
+.n-title { flex: 1; color: #e0e0e0; font-weight: 500; }
+.n-author { width: 100px; flex-shrink: 0; color: #888; text-align: center; }
+.n-date { width: 100px; flex-shrink: 0; color: #666; text-align: center; }

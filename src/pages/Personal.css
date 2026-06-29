@@ -1,0 +1,41 @@
+.personal-page { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+.personal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+.personal-header h2 { font-size: 24px; font-weight: 700; color: #fff; }
+.submit-link { font-size: 14px; color: #667eea; font-weight: 500; padding: 8px 16px; background: rgba(102,126,234,0.1); border-radius: 8px; transition: all 0.2s; }
+.submit-link:hover { background: rgba(102,126,234,0.2); }
+
+.upload-section { margin-bottom: 28px; }
+.upload-drop { border: 2px dashed rgba(255,255,255,0.1); border-radius: 14px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.upload-drop:hover { border-color: rgba(102,126,234,0.4); background: rgba(102,126,234,0.03); }
+.drop-icon { font-size: 36px; color: #667eea; margin-bottom: 8px; }
+.upload-drop p { color: #aaa; font-size: 15px; margin-bottom: 4px; }
+.drop-hint { color: #666; font-size: 12px; }
+
+.upload-progress { margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+.progress-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 4px; transition: width 0.1s; }
+.progress-text { font-size: 13px; color: #667eea; font-weight: 600; min-width: 40px; }
+
+.files-section { display: grid; grid-template-columns: 320px 1fr; gap: 20px; min-height: 400px; }
+
+.files-list { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; padding: 20px; overflow-y: auto; max-height: 600px; }
+.files-list h3 { font-size: 14px; color: #999; margin-bottom: 16px; font-weight: 600; }
+.empty-msg { color: #555; font-size: 13px; text-align: center; padding: 40px 0; }
+
+.file-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; margin-bottom: 4px; }
+.file-item:hover { background: rgba(255,255,255,0.03); }
+.file-item.active { background: rgba(102,126,234,0.08); border-color: rgba(102,126,234,0.2); }
+.file-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.file-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.file-name { font-size: 14px; color: #e0e0e0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-meta { font-size: 11px; color: #666; }
+.file-dates { display: flex; flex-direction: column; gap: 2px; }
+.file-history { font-size: 10px; color: #555; white-space: nowrap; }
+
+.code-viewer-wrapper { min-height: 300px; }
+.viewer-empty { display: flex; align-items: center; justify-content: center; min-height: 300px; color: #555; font-size: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 14px; }
+
+@media (max-width: 768px) {
+  .files-section { grid-template-columns: 1fr; }
+  .files-list { max-height: 250px; }
+}

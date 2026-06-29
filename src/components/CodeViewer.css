@@ -1,0 +1,127 @@
+.cv-container {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0d1117;
+}
+
+.cv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 12px;
+}
+
+.cv-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cv-lang-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(102,126,234,0.15);
+  color: #667eea;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cv-filename {
+  font-size: 13px;
+  color: #e0e0e0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cv-meta {
+  font-size: 11px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.cv-header-right {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cv-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #999;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.2s;
+}
+
+.cv-btn:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+}
+
+.cv-code-area {
+  display: flex;
+  max-height: 500px;
+  overflow: auto;
+}
+
+.cv-line-numbers {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  background: rgba(255,255,255,0.02);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.cv-line-numbers span {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #444;
+  padding: 0 12px;
+  text-align: right;
+  min-width: 40px;
+}
+
+.cv-code {
+  margin: 0;
+  padding: 16px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #c9d1d9;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.cv-footer {
+  padding: 8px 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cv-history-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  background: rgba(102,126,234,0.08);
+  color: #667eea;
+  border-radius: 4px;
+  font-weight: 400;
+}

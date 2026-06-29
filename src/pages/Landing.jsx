@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import './Landing.css'
 
 function Landing() {
+  const { user } = useAuth()
+
   return (
     <div className="landing">
       <div className="landing-bg">
@@ -11,34 +14,34 @@ function Landing() {
       </div>
 
       <div className="landing-content">
-        <div className="landing-badge">Next Level Nova</div>
+        <div className="landing-badge">MakePro Platform</div>
 
         <h1 className="landing-title">
-          <span className="title-line">Next</span>
-          <span className="title-line indent-1">Level</span>
-          <span className="title-line indent-2">Nova</span>
+          <span className="title-main">MakePro</span>
         </h1>
-
-        <p className="landing-quote">
-          "하나님의 부르심 안에서 더 높은 믿음의 단계로 나아가
-          <br />
-          세상을 밝히는 새로운 빛이 되다"
-        </p>
+        <p className="landing-subtitle">프로로 만들어 주는 사이트 + Project를 만들어 준다</p>
 
         <div className="landing-cards">
-          <Link to="/hackathon/notices" className="landing-card">
+          <Link to={user ? '/personal' : '/login'} className="landing-card">
             <div className="card-icon">&#x1f4bb;</div>
-            <h3>AI 해커톤</h3>
-            <p>AI 해커톤 프로젝트 공지사항, 작품 제출 및 문서 작성</p>
+            <h3>개인</h3>
+            <p>코드 파일 업로드, 리뉴얼 관리 및 프로젝트 제출</p>
             <span className="card-arrow">&rarr;</span>
           </Link>
-          <Link to="/president/notices" className="landing-card">
-            <div className="card-icon">&#x1f3c6;</div>
-            <h3>총장배</h3>
-            <p>총장배 대회 공지사항, 작품 제출 및 문서 작성</p>
+          <Link to="/project" className="landing-card">
+            <div className="card-icon">&#x1f4c1;</div>
+            <h3>프로젝트</h3>
+            <p>공지사항 확인 및 공유된 프로젝트 게시판 열람</p>
             <span className="card-arrow">&rarr;</span>
           </Link>
         </div>
+
+        {!user && (
+          <div className="landing-cta">
+            <Link to="/register" className="cta-btn primary">회원가입</Link>
+            <Link to="/login" className="cta-btn secondary">로그인</Link>
+          </div>
+        )}
       </div>
     </div>
   )

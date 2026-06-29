@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(10, 10, 15, 0.85);
+  background: rgba(10, 10, 15, 0.9);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -12,7 +12,7 @@
 .navbar-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 24px;
   height: 70px;
   display: flex;
   align-items: center;
@@ -20,24 +20,36 @@
 }
 
 .navbar-logo {
-  font-size: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logo-text {
+  font-size: 22px;
   font-weight: 900;
-  letter-spacing: 3px;
+  letter-spacing: 1px;
   background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.navbar-links {
+.logo-sub {
+  font-size: 10px;
+  color: #666;
+  letter-spacing: 0.5px;
+}
+
+.navbar-center {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .nav-link {
   padding: 8px 20px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: #999;
   transition: all 0.3s ease;
@@ -52,4 +64,73 @@
   color: #fff;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
   border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.admin-link {
+  color: #e8a838;
+}
+
+.admin-link.active {
+  background: linear-gradient(135deg, rgba(232, 168, 56, 0.15), rgba(234, 102, 102, 0.15));
+  border: 1px solid rgba(232, 168, 56, 0.3);
+  color: #e8a838;
+}
+
+.navbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-name {
+  font-size: 13px;
+  color: #aaa;
+  margin-right: 4px;
+}
+
+.auth-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.login-btn {
+  color: #ccc;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.register-btn {
+  color: #fff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.register-btn:hover {
+  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+}
+
+.logout-btn {
+  color: #999;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logout-btn:hover {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+@media (max-width: 768px) {
+  .navbar-inner { padding: 0 12px; }
+  .logo-sub { display: none; }
+  .nav-link { padding: 6px 12px; font-size: 13px; }
+  .auth-btn { padding: 6px 10px; font-size: 12px; }
+  .user-name { display: none; }
 }
