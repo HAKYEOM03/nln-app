@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { getSubmissions } from '../../utils/db'
-import CodeViewer from '../../components/CodeViewer'
 import './Admin.css'
 
 function AdminSubmissions() {
   const { hasPermission } = useAuth()
-  const [viewingCode, setViewingCode] = useState(null)
   const [submissions, setSubmissions] = useState([])
+  const [modal, setModal] = useState(null)
 
   useEffect(() => {
     getSubmissions().then(setSubmissions)
@@ -28,36 +27,56 @@ function AdminSubmissions() {
           <span className="at-title">제목</span>
           <span className="at-cat">카테고리</span>
           <span className="at-date">날짜</span>
-          <span style={{ width: 80 }}>코드</span>
         </div>
         {submissions.map(s => (
-          <div key={s.id}>
-            <div className="admin-row">
-              <span className="at-name">{s.userName}</span>
-              <span className="at-title">
-                {s.title}
-                {s.deployUrl && <a href={s.deployUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8, fontSize: 11, color: '#4ade80' }}>[배포]</a>}
-                {s.githubUrl && <a href={s.githubUrl} target="_blank" rel="noopener noreferrer" style={{ marginLeft: 4, fontSize: 11, color: '#888' }}>[GitHub]</a>}
-              </span>
-              <span className="at-cat"><span className="cat-tag">{s.category}</span></span>
-              <span className="at-date">{new Date(s.createdAt).toLocaleDateString()}</span>
-              <span style={{ width: 80 }}>
-                {s.codeContent && (
-                  <button className="admin-btn edit" onClick={() => setViewingCode(viewingCode === s.id ? null : s.id)}>
-                    {viewingCode === s.id ? '닫기' : '보기'}
-                  </button>
-                )}
-              </span>
-            </div>
-            {viewingCode === s.id && s.codeContent && (
-              <div style={{ padding: '0 16px 16px' }}>
-                <CodeViewer fileName={s.codeFileName} content={s.codeContent} />
-              </div>
-            )}
+          <div key={s.id} className="admin-row" style={{ cursor: 'pointer' }} onClick={() => setModal(s)}>
+            <span className="at-name">{s.userName}</span>
+            <span className="at-title" style={{ color: '#667eea' }}>{s.title}</span>
+            <span className="at-cat"><span className="cat-tag">{s.category}</span></span>
+            <span className="at-date">{new Date(s.createdAt).toLocaleDateString()}</span>
           </div>
         ))}
         {submissions.length === 0 && <p className="empty-text">제출된 프로젝트가 없습니다.</p>}
       </div>
+
+      {modal && (
+        <div className="modal-overlay" onClick={() => setModal(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModal(null)}>&times;</button>
+            <h3 className="modal-title">{modal.title}</h3>
+            <div className="modal-body">
+              <div className="modal-field">
+                <span className="modal-label">개발자</span>
+                <span className="modal-value">{modal.userName} ({modal.studentId})</span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">카테고리</span>
+                <span className="modal-value">{modal.category}</span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">배포 링크</span>
+                <span className="modal-value">
+                  {modal.deployUrl ? <a href={modal.deployUrl} target="_blank" rel="noopener noreferrer">{modal.deployUrl}</a> : '없음'}
+                </span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">GitHub</span>
+                <span className="modal-value">
+                  {modal.githubUrl ? <a href={modal.githubUrl} target="_blank" rel="noopener noreferrer">{modal.githubUrl}</a> : '없음'}
+                </span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">설명</span>
+                <span className="modal-value">{modal.description || '없음'}</span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">제출일</span>
+                <span className="modal-value">{new Date(modal.createdAt).toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

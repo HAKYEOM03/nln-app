@@ -1,20 +1,17 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
 import { getSubmissions } from '../utils/db'
 import Pagination from '../components/Pagination'
-import CodeViewer from '../components/CodeViewer'
 import './ProjectBoard.css'
 
 const PER_PAGE = 10
 const CATEGORIES = ['전체', '총장배', 'AI 경진대회', 'AI SW 경진대회']
 
 function ProjectBoard() {
-  const { user, isAdmin, isSubAdmin } = useAuth()
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedCategory, setSelectedCategory] = useState('전체')
-  const [viewingCode, setViewingCode] = useState(null)
   const [allSubs, setAllSubs] = useState([])
+  const [modal, setModal] = useState(null)
 
   useEffect(() => {
     getSubmissions().then(setAllSubs)
@@ -23,8 +20,6 @@ function ProjectBoard() {
   const filtered = selectedCategory === '전체' ? allSubs : allSubs.filter(s => s.category === selectedCategory)
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const current = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE)
-
-  const canViewCode = isAdmin || isSubAdmin
 
   const formatDate = (iso) => {
     const d = new Date(iso)
@@ -57,7 +52,7 @@ function ProjectBoard() {
           </div>
         ) : (
           current.map(sub => (
-            <div key={sub.id} className="board-card">
+            <div key={sub.id} className="board-card" style={{ cursor: 'pointer' }} onClick={() => setModal(sub)}>
               <div className="board-card-top">
                 <span className="board-cat">{sub.category}</span>
                 <span className="board-date">{formatDate(sub.createdAt)}</span>
@@ -67,27 +62,46 @@ function ProjectBoard() {
               {sub.description && <p className="board-desc">{sub.description}</p>}
               <div className="board-links">
                 {sub.deployUrl && (
-                  <a href={sub.deployUrl} target="_blank" rel="noopener noreferrer" className="board-link-btn deploy">배포 링크</a>
+                  <a href={sub.deployUrl} target="_blank" rel="noopener noreferrer" className="board-link-btn deploy" onClick={e => e.stopPropagation()}>배포 링크</a>
                 )}
                 {sub.githubUrl && (
-                  <a href={sub.githubUrl} target="_blank" rel="noopener noreferrer" className="board-link-btn github">GitHub</a>
-                )}
-                {canViewCode && sub.codeContent && (
-                  <button className="board-link-btn code" onClick={() => setViewingCode(viewingCode === sub.id ? null : sub.id)}>
-                    {viewingCode === sub.id ? '코드 닫기' : '코드 보기'}
-                  </button>
+                  <a href={sub.githubUrl} target="_blank" rel="noopener noreferrer" className="board-link-btn github" onClick={e => e.stopPropagation()}>GitHub</a>
                 )}
               </div>
-              {viewingCode === sub.id && canViewCode && (
-                <div style={{ marginTop: 12 }}>
-                  <CodeViewer fileName={sub.codeFileName} content={sub.codeContent} />
-                </div>
-              )}
             </div>
           ))
         )}
       </div>
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+
+      {modal && (
+        <div className="modal-overlay" onClick={() => setModal(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setModal(null)}>&times;</button>
+            <h3 className="modal-title">{modal.title}</h3>
+            <div className="modal-body">
+              <div className="modal-field">
+                <span className="modal-label">개발자</span>
+                <span className="modal-value">{modal.userName} ({modal.studentId})</span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">카테고리</span>
+                <span className="modal-value">{modal.category}</span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">배포 링크</span>
+                <span className="modal-value">
+                  {modal.deployUrl ? <a href={modal.deployUrl} target="_blank" rel="noopener noreferrer">{modal.deployUrl}</a> : '없음'}
+                </span>
+              </div>
+              <div className="modal-field">
+                <span className="modal-label">설명</span>
+                <span className="modal-value">{modal.description || '없음'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
