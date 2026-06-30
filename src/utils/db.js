@@ -9,6 +9,8 @@ const COL = {
   NOTICES: 'notices',
   SUBMISSIONS: 'submissions',
   CODE_FILES: 'code_files',
+  FEEDBACKS: 'feedbacks',
+  NOTIFICATIONS: 'notifications',
 }
 
 export async function initDB() {
@@ -107,6 +109,57 @@ export async function addSubmission(submission) {
   const newSub = { ...submission, createdAt: new Date().toISOString() }
   const ref = await addDoc(collection(db, COL.SUBMISSIONS), newSub)
   return { id: ref.id, ...newSub }
+}
+
+export async function updateSubmission(subId, updates) {
+  await updateDoc(doc(db, COL.SUBMISSIONS, subId), updates)
+}
+
+export async function getUserSubmissions(userId) {
+  const q = query(collection(db, COL.SUBMISSIONS), where('userId', '==', userId))
+  const snap = await getDocs(q)
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+}
+
+export async function getFeedbacks(submissionId) {
+  const q = query(collection(db, COL.FEEDBACKS), where('submissionId', '==', submissionId))
+  const snap = await getDocs(q)
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+}
+
+export async function addFeedback(feedbackData) {
+  const entry = { ...feedbackData, createdAt: new Date().toISOString() }
+  const ref = await addDoc(collection(db, COL.FEEDBACKS), entry)
+  return { id: ref.id, ...entry }
+}
+
+export async function getNotifications(userId) {
+  const q = query(collection(db, COL.NOTIFICATIONS), where('toUserId', '==', userId))
+  const snap = await getDocs(q)
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+}
+
+export async function addNotification(noti) {
+  const entry = { ...noti, read: false, createdAt: new Date().toISOString() }
+  const ref = await addDoc(collection(db, COL.NOTIFICATIONS), entry)
+  return { id: ref.id, ...entry }
+}
+
+export async function markNotificationRead(notiId) {
+  await updateDoc(doc(db, COL.NOTIFICATIONS, notiId), { read: true })
+}
+
+export async function markAllNotificationsRead(userId) {
+  const notis = await getNotifications(userId)
+  for (const n of notis.filter(x => !x.read)) {
+    await updateDoc(doc(db, COL.NOTIFICATIONS, n.id), { read: true })
+  }
 }
 
 export async function getCodeFiles(userId) {
